@@ -11,7 +11,11 @@ patient_details = db.collection('patient_details')
 medicines_diagonized = db.collection('medicines_diagonized')
 diagnosis_keywords = db.collection('diagnosis_keywords')
 
+# API SUMMARY
 
+# API1: patient_details_api [POST and GET]
+# API2: diagonized_medicines_api [POST GET and PUT]
+# API3: diagnosis_keywords_api [POST GET and PUT]
 
 @app.route('/patient_details_api',methods=['POST','GET'])
 def patient_details_api():
