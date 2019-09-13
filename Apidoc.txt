@@ -1,0 +1,90 @@
+'''
+    API 1:
+        - This has two types,
+            1. POST Request. (Patients end)
+                The params are sent and stored in the firebase.
+
+                Example json:
+                                    {
+                    "address": "hdsbvjdbj2sh",
+                    "age": "63",
+                    "email": "nimish@gmail.com",
+                    "height": "165",
+                    "name": "Nkskjdsfimish",
+                    "phone": "9535526241",
+                    "pid": "POC0015",
+                    "weight": "62"
+                }
+
+
+            2. GET Request. (Doctors end)
+        
+        #Please note that in both of them the mandatory parameter is the patient id, that can be easily and randomly generated for a particular user
+        #This will basically function as the primary key in all the collections.
+'''
+
+
+
+'''
+    API 2:
+        - This has three types,
+            1. POST Request. (Doctor's end)
+                The params are sent and stored in the firebase, medicines and all.
+                Here timestamp and pid are the compulsory params.
+
+                Example json:
+                    {
+                        "pid":"POC00189",
+                        "timestamp":"26/02/11 12:02:12",
+                        "medicines":[
+                        {
+                            "name":"kolo",
+                            "dosage":"2"
+                        },
+                        {
+                            "name":"Dolo",
+                            "dosage":"2"
+                        },
+                        {
+                            "name":"Dolo",
+                            "dosage":"2"
+                        }
+                    ]
+                    }
+
+            2. GET Request. (Patients End)
+                Just give the pid and get all the medicines prescribed.
+            3. PUT request (Doctors end)
+                Here, we have o provide the pid with the !!UPDATED JSON!!
+                #Please read the documentation below for the updated json task.
+
+        #Please note that in both of them the mandatory parameter is the patient id, that can be easily and randomly generated for a particular user
+        #This will basically function as the primary key in all the collections.
+'''
+
+'''
+    API 3:
+        - This has three types,
+            1. POST Request. (Doctor's end)
+                The params are sent and stored in the firebase, keywords and probable symptoms true false etc..
+                Here timestamp and pid are the compulsory params.
+                Example json:
+                    {
+                        "pid":"POC00189",
+                        "timestamp":"26/02/11 12:02:12",
+                        "symptoms":{
+                            "cough":true,
+                            "fever":false
+						},
+						"keywords":["depressedLife","breakup","patchup","suicidal feelings"]
+    }
+
+            2. GET Request. (Patients End for the prescription generation.)
+                Just give the pid and get all the parameters required to generate the prescription
+            3. PUT request (Doctors end)
+                Here, we have o provide the pid with the !!UPDATED JSON!!
+                #Please read the documentation below for the updated json task.
+
+        #Please note that in both of them the mandatory parameter is the patient id, that can be easily and randomly generated for a particular user
+        #This will basically function as the primary key in all the collections.
+'''
