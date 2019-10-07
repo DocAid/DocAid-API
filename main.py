@@ -81,6 +81,9 @@ def diagonized_medicines_api():
         return "Invalid request"
 
 
+@app.route('/', methods=["GET"])
+def index():
+    return "HELLO WORLD"
 
 
 @app.route('/diagnosis_keywords_api',methods=['GET','PUT','POST'])
