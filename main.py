@@ -1,5 +1,5 @@
 
-from flask import Flask, redirect, url_for,request,jsonify;
+from flask import Flask, redirect, url_for,request,jsonify, render_template
 from firebase_admin import credentials, firestore, initialize_app;
 
 app = Flask(__name__)
@@ -83,7 +83,7 @@ def diagonized_medicines_api():
 
 @app.route('/', methods=["GET"])
 def index():
-    return "HELLO WORLD"
+    return render_template('index.html')
 
 
 @app.route('/diagnosis_keywords_api',methods=['GET','PUT','POST'])
