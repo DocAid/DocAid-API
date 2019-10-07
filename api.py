@@ -17,7 +17,35 @@ diagnosis_keywords = db.collection('diagnosis_keywords')
 # API2: diagonized_medicines_api [POST GET and PUT]
 # API3: diagnosis_keywords_api [POST GET and PUT]
 
-@app.route('/patient_details_api',methods=['POST','GET'])
+
+@app.route('/prediction',methods=['POST'])
+def prediction():
+
+    s = ['skin_rash','continuous_sneezing','acidity','fatigue','nausea','loss_of_appetite','chest_pain','fast_heart_rate','bladder_discomfort','muscle_pain','prognosis']
+    requestData = request.json
+    print(requestData)
+    data = requestData['val']
+    symptom = []
+    for i in range(0,10):
+        if data[i] == 1:
+            symptom.append(s[i])
+
+    if request.method == 'POST':
+        dummyData = {
+            "message":"Reply aaya be",
+            "symptoms": symptom,
+            "Alergy":[
+                0,{
+                    "Hydroxyzine": [1, 0, 1, 600],
+                    "Levocetirizine": [2, 0, 1, 400],
+                    "Xyzal": [3, 0, 1, 500],
+                    "Vistaril": [4, 0, 1, 650],
+                    "Doxylamine": [5, 0, 1, 500]
+                }
+            ]
+        }
+        return dummyData
+@app.route('/patient_details',methods=['POST','GET'])
 def patient_details_api():
 
     requestData = request.json
@@ -126,6 +154,9 @@ def diagnosis_keywords_api():
     else:
         return "Invalid request"
 
+@app.route('/')
+def index():
+    return "Hello world"
 
 
 
