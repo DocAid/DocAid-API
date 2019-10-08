@@ -2,6 +2,7 @@
 from flask import Flask, redirect, url_for, request, jsonify
 from firebase_admin import credentials, firestore, initialize_app
 import pickle
+import socket
 import json
 app = Flask(__name__)
 cred = credentials.Certificate('key.json')
@@ -152,5 +153,24 @@ def index():
     return "Hello world"
 
 
+@app.route('/', methods=['GET'])
+def socket_server():
+
+    # Work for raghav: pull user data from firebase and put it in data
+    # if data not in firebase, return unsuccessful
+
+    data = request.json
+    data = data['uid']
+    print(data)
+    client.send(data.encode())
+
+    return "Hello World"
+
+
 if __name__ == '__main__':
+    host = socket.gethostname()
+    port = 5500
+
+    client = socket.socket()
+    client.connect((host, port))
     app.run(host='127.0.0.1', port=5000, debug=True)
