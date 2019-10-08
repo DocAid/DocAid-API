@@ -1,36 +1,37 @@
 import socket
+import _thread
 
 
-def connect_to_client(data):
-    pass  # Send data to client
+def new_client(client, addr, clientID):
+    while True:
+        data = client.recv(2048)
+        if data:
+            print(data.decode())
+        if clientID != 1:
+            client.send("Hello".encode())
+    client.close()
 
 
-def server_program():
+def main():
+    clientID = 0
     # get the hostname
     host = socket.gethostname()
-    port = 5500  # initiate port no above 1024
+    port = 5500
 
-    server_socket = socket.socket()  # get instance
-    # look closely. The bind() function takes tuple as argument
-    server_socket.bind((host, port))  # bind host address and port together
+    server = socket.socket()
+    server.bind((host, port))
+    server.listen(3)
+    print("Server started. Listening on port: ", port)
 
-    # configure how many client the server can listen simultaneously
-    server_socket.listen(3)
-    conn, address = server_socket.accept()  # accept new connection
-    print("Connection from: " + str(address))
     while True:
-        # receive data stream. it won't accept data packet greater than 1024 bytes
-        data = conn.recv(1024).decode()
-        if data:
-            print("from connected user: ", str(data))
-
-            # This function will do the socket server to socket client task
-            connect_to_client(data)
-
-            conn.close()
-            break  # close the connection
+        c, addr = server.accept()
+        clientID += 1
+        if clientID == 1:
+            print("Connected to API: ", addr)
+        _thread.start_new_thread(new_client, (c, addr, clientID))
+    server.close()
 
 
 if __name__ == '__main__':
     while True:
-        server_program()
+        main()
