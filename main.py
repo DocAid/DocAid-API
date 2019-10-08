@@ -22,37 +22,34 @@ diagnosis_keywords = db.collection('diagnosis_keywords')
 @app.route('/prediction', methods=['POST'])
 def prediction():
 
-    s = ['skin_rash', 'continuous_sneezing', 'acidity', 'fatigue', 'nausea', 'loss_of_appetite',
-         'chest_pain', 'fast_heart_rate', 'bladder_discomfort', 'muscle_pain', 'prognosis']
     requestData = request.json
     print(requestData)
     data = requestData['val']
-    
+
     if request.method == 'POST':
 
-        model = pickle.load(open('medpred.pickle','rb'))
+        model = pickle.load(open('medpred.pickle', 'rb'))
         dummydata = model.predict([data])
         d = str(dummydata[0])
-        print(type(d),d)
+        print(type(d), d)
         with open('medicine.json') as json_file:
             jdata = json.load(json_file)
             # print(jdata)
             data = jdata[d]
         # data = jsonify(dummydata)
         print(data)
-        ndata = {d:data}
+        ndata = {d: data}
         jsondata = jsonify(ndata)
         return jsondata
 
 
 @app.route('/patient_details', methods=['POST', 'GET'])
-def patient_details():
+def patient_details_function():
 
     requestData = request.json
     pid = requestData['pid']
 
     if request.method == 'POST':
-        res = patient_details.document(pid).set(request.json)
         data = {
             "message": "patient_added",
             "pid": pid
@@ -107,7 +104,7 @@ def diagonized_medicines():
 
 
 @app.route('/diagnosis_keywords', methods=['GET', 'PUT', 'POST'])
-def diagnosis_keywords():
+def diagnosis_keywords_function():
 
     requestData = request.json
     pid = requestData['pid']
@@ -156,4 +153,4 @@ def index():
 
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=8080, debug=True)
+    app.run(host='127.0.0.1', port=5000, debug=True)
