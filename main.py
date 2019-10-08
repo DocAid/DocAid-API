@@ -1,7 +1,8 @@
 
 from flask import Flask, redirect, url_for, request, jsonify
 from firebase_admin import credentials, firestore, initialize_app
-
+import pickle
+import json
 app = Flask(__name__)
 cred = credentials.Certificate('key.json')
 default_app = initialize_app(cred)
@@ -26,26 +27,22 @@ def prediction():
     requestData = request.json
     print(requestData)
     data = requestData['val']
-    symptom = []
-    for i in range(0, 10):
-        if data[i] == 1:
-            symptom.append(s[i])
-
+    
     if request.method == 'POST':
-        dummyData = {
-            "message": "Reply aaya be",
-            "symptoms": symptom,
-            "Alergy": [
-                0, {
-                    "Hydroxyzine": [1, 0, 1, 600],
-                    "Levocetirizine": [2, 0, 1, 400],
-                    "Xyzal": [3, 0, 1, 500],
-                    "Vistaril": [4, 0, 1, 650],
-                    "Doxylamine": [5, 0, 1, 500]
-                }
-            ]
-        }
-        return dummyData
+
+        model = pickle.load(open('medpred.pickle','rb'))
+        dummydata = model.predict([data])
+        d = str(dummydata[0])
+        print(type(d),d)
+        with open('medicine.json') as json_file:
+            jdata = json.load(json_file)
+            # print(jdata)
+            data = jdata[d]
+        # data = jsonify(dummydata)
+        print(data)
+        ndata = {d:data}
+        jsondata = jsonify(ndata)
+        return jsondata
 
 
 @app.route('/patient_details', methods=['POST', 'GET'])

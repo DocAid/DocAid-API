@@ -1,0 +1,102 @@
+{
+  "Allergy": [
+    0,
+    {
+      "Hydroxyzine": [1, 0, 1, 600],
+      "Levocetirizine": [2, 0, 1, 400],
+      "Xyzal": [3, 0, 1, 500],
+      "Vistaril": [4, 0, 1, 650],
+      "Doxylamine": [5, 0, 1, 500]
+    }
+  ],
+  "Cold": [
+    0,
+    {
+      "Benadryl": [1, 0, 1, 500],
+      "Diphenhydramine": [2, 0, 1, 500],
+      "Vicks": [3, 0, 1, 400],
+      "Chlorpheniramine": [4, 0, 1, 400],
+      "Coricidin": [5, 0, 1, 600]
+    }
+  ],
+  "Dengue": [
+    1,
+    {
+      "Acetaminophen": [1, 1, 1, 650],
+      "Aspirin":[2,1,1,500],
+      "Platimax":[3,1,0,500],
+      "Qubinor":[4,1,1,600],
+      "Ostoshine":[5,1,1,600]
+    }
+  ],
+  "Fungal Infection": [
+    0,
+    {
+      "Betamethasone": [1, 1, 0, 500],
+      "Ketaconazole": [2, 1, 0, 400],
+      "Clotrimazole": [3, 0, 0, 600],
+      "Lamisil": [4, 0, 0, 500],
+      "Terbinafine": [5, 0, 0, 650]
+    }
+  ],
+  "Malaria": [
+    1,
+    {
+      "Artemether": [1, 1, 0, 400],
+      "Coartem": [2, 1, 0, 500],
+      "Malarone": [3, 1, 0, 650],
+      "Mefloquine": [4, 0, 0, 600],
+      "Doxycycline": [5, 1, 1, 550]
+    }
+  ],
+  "Migraine": [
+    0,
+    {
+      "Sumatriptan": [1, 1, 0, 500],
+      "Imitrex": [2, 1, 0, 450],
+      "Maxalt": [3, 1, 0, 700],
+      "Rizatriptan": [4, 1, 0, 400],
+      "Replax": [5, 1, 0, 600]
+    }
+  ],
+  "Pneumonia": [
+    0,
+    {
+      "Levoflaxin": [1, 1, 0, 500],
+      "Clarithromycin": [2, 1, 0, 600],
+      "Levaquin": [3, 1, 0, 450],
+      "Ceftriaxone": [4, 0, 0, 500],
+      "Amoxil": [5, 0, 0, 500]
+    }
+  ],
+  "Typhoid": [
+    1,
+    {
+      "Ciproflaxacin": [1, 1, 0, 650],
+      "Ceftriaxone": [2, 0, 0, 500],
+      "Cipro": [3, 1, 0, 400],
+      "Azithromycin": [4, 0, 0, 600],
+      "Zithromax": [5, 0, 0, 600]
+    }
+  ],
+  "Urinary tract infection": [
+    0,
+    {
+      "Ciproflaxacin": [1, 1, 0, 650],
+      "Nitrofurantoin": [2, 0, 0, 650],
+      "Cipro": [3, 1, 0, 400],
+      "Macrobid": [4, 0, 0, 400],
+      "Bactrium": [5, 1, 1, 500]
+    }
+  ],
+  "Tubercolosis": [
+    1,
+    {
+      "Pyrazinamide": [1, 1, 1, 500],
+      "Ethambutol": [2, 1, 0, 600],
+      "Isoniazid": [3, 1, 1, 500],
+      "Rifampin": [4, 1, 0, 450],
+      "Amikin": [5, 1, 0, 450]
+    }
+  ]
+}
