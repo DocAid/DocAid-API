@@ -120,10 +120,6 @@ def diagonized_medicines():
 @app.route('/keywords', methods=['GET', 'PUT', 'POST'])
 def keywords():
 
-
-@app.route('/keywords', methods=['GET', 'PUT', 'POST'])
-def keywords():
-
     requestData = request.json
     pid = requestData['pid']
 
