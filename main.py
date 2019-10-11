@@ -44,16 +44,18 @@ def prediction():
         return jsondata
 
 
-@app.route('/patient_details', methods=['POST', 'GET'])
-def patient_details_function():
+@app.route('/patient_details',methods=['POST','GET'])
+def patient_details_api():
 
     requestData = request.json
     pid = requestData['pid']
 
     if request.method == 'POST':
+        res = patient_details.document(pid).set(request.json)
         data = {
-            "message": "patient_added",
-            "pid": pid
+            
+            "message":"patient_added",
+            "pid": pid 
         }
         return data
     elif request.method == 'GET':
@@ -65,7 +67,7 @@ def patient_details_function():
 
 @app.route('/diagonized_medicines', methods=['POST', 'GET', 'PUT'])
 def diagonized_medicines():
-    requestData = request.json
+    requestData = request.json  
     pid = requestData['pid']
 
     if(request.method == 'POST'):
@@ -104,8 +106,8 @@ def diagonized_medicines():
         return "Invalid request"
 
 
-@app.route('/diagnosis_keywords', methods=['GET', 'PUT', 'POST'])
-def diagnosis_keywords_function():
+@app.route('/keywords',methods=['GET','PUT','POST'])
+def keywords():
 
     requestData = request.json
     pid = requestData['pid']
@@ -114,10 +116,10 @@ def diagnosis_keywords_function():
         timestamp = requestData['timestamp']
         diagnosis_keywords.document(pid).set(request.json)
         data = {
-            "message": "Keywords stored!!!",
-            "pid": pid,
-            "timestamp": timestamp
-        }
+                "message":"Keywords stored!!!",
+                "pid": pid,
+                "timestamp":timestamp
+            }
         return data
 
     elif request.method == 'PUT':
@@ -131,15 +133,15 @@ def diagnosis_keywords_function():
 
             #Thats just json, manipulation, in the api, we will just update the value, whenever a put request is received.
         '''
-        # The requestData will obviously change as is sent in the request.
+        #The requestData will obviously change as is sent in the request.
         diagnosis_keywords.document(pid).update(requestData)
         data = {
-            "message": "Keywords updated",
-            "pid": pid,
+            "message":"Keywords updated",
+            "pid":pid,
         }
         return data
 
-    # This will be used while generating the prescription.
+    #This will be used while generating the prescription.
     elif(request.method == 'GET'):
         data = diagnosis_keywords.document(pid).get()
         return jsonify(data.to_dict())
@@ -148,22 +150,23 @@ def diagnosis_keywords_function():
         return "Invalid request"
 
 
+
 @app.route('/')
 def index():
     return "Hello world"
 
 
-@app.route('/', methods=['GET'])
+@app.route('/socket_conn', methods=['GET'])
 def socket_server():
 
     # Work for raghav: pull user data from firebase and put it in data
     # if data not in firebase, return unsuccessful
 
     data = request.json
-    data = data['uid']
-    print(data)
+    pid = data['pid']
+    data = patient_details.document(pid).get()
+    data =  jsonify(data.to_dict())
     client.send(data.encode())
-
     return "Hello World"
 
 
