@@ -1,18 +1,35 @@
 
-from flask import Flask, redirect, url_for, request, jsonify
+from flask import Flask, redirect, url_for, request, jsonify,render_template
 from firebase_admin import credentials, firestore, initialize_app
 import pickle
 import socket
 import json
+import pyrebase
+import pdfkit
 import sklearn
 app = Flask(__name__)
 cred = credentials.Certificate('key.json')
 default_app = initialize_app(cred)
 db = firestore.client()
 
+config = {
+       "apiKey": "AIzaSyAmAnf-0bRmvGjRkJJgpZkDiZ3nRIFlBhw",
+    "authDomain": "docaid-api.firebaseapp.com",
+    "databaseURL": "https://docaid-api.firebaseio.com",
+    "projectId": "docaid-api",
+    "storageBucket": "docaid-api.appspot.com",
+    "messagingSenderId": "918014081942",
+    "appId": "1:918014081942:web:827def8f7c8615204d7bb7"
+
+}
+
+firebase = pyrebase.initialize_app(config)
+storage = firebase.storage()
+
 patient_details = db.collection('patient_details')
 medicines_diagonized = db.collection('medicines_diagonized')
 diagnosis_keywords = db.collection('diagnosis_keywords')
+reports = db.collection('reportsUrl')
 
 # API SUMMARY
 
@@ -20,6 +37,33 @@ diagnosis_keywords = db.collection('diagnosis_keywords')
 # API2: diagonized_medicines_api [POST GET and PUT]
 # API3: diagnosis_keywords_api [POST GET and PUT]
 
+
+@app.route('/rg',methods=['POST'])
+def genPdf():
+    if request.method == 'POST':
+        data = request.json
+        age = data['age']
+        pid = data['pid']
+        dosages = data['dosages']
+        bmi = data['bmi']
+        x = render_template('r.html',pid=pid,age=age,bmi=bmi,dosages=dosages)
+        print(x)
+        pdfkit.from_string(x,'report1.pdf')
+        report = str(pid)
+        storage.child('reportsPdf/{}'.format(report)).put('report1.pdf')
+        pdf_url = storage.child('reportsPdf/{}'.format(report)).get_url(None)
+        data = {
+            'pdf_url':pdf_url
+        }
+        res = reports.document(pid).set(data)
+        return pdf_url
+    
+@app.route('/sendReportToDB',methods=['POST'])
+def getReport():
+    requestData = request.json
+    pid = requestData['pid']
+    data = reports.document(pid).get()
+    return jsonify(data.to_dict())
 
 @app.route('/prediction', methods=['POST'])
 def prediction():
@@ -217,12 +261,14 @@ def socket_server():
     client.send(data.encode())
     return "Hello World"
 
+           
+
 
 if __name__ == '__main__':
-    host = "34.93.126.224"
+    # host = "34.93.126.224"
     # host = socket.gethostname()
-    port = 5500
+    # port = 5500
 
-    client = socket.socket()
-    client.connect((host, port))
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # client = socket.socket()
+    # client.connect((host, port))
+    app.run(debug=True)

@@ -1,0 +1,72 @@
+<html>
+<head>   
+<meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+<style type="text/css">
+span.cls_003{font-family:"Trebuchet MS",serif;font-size:25.0px;color:rgb(0,0,0);font-weight:normal;font-style:normal;text-decoration: none}
+div.cls_003{font-family:"Trebuchet MS",serif;font-size:25.0px;color:rgb(0,0,0);font-weight:normal;font-style:normal;text-decoration: none}
+span.cls_005{font-family:"Trebuchet MS",serif;font-size:15.1px;color:rgb(255,255,255);font-weight:normal;font-style:normal;text-decoration: none}
+div.cls_005{font-family:"Trebuchet MS",serif;font-size:15.1px;color:rgb(255,255,255);font-weight:normal;font-style:normal;text-decoration: none}
+span.cls_002{font-family:"Trebuchet MS",serif;font-size:20.1px;color:rgb(0,0,0);font-weight:normal;font-style:normal;text-decoration: none}
+div.cls_002{font-family:"Trebuchet MS",serif;font-size:20.1px;color:rgb(0,0,0);font-weight:normal;font-style:normal;text-decoration: none}
+span.cls_007{font-family:"Trebuchet MS",serif;font-size:15.1px;color:rgb(9,146,118);font-weight:normal;font-style:normal;text-decoration: none}
+div.cls_007{font-family:"Trebuchet MS",serif;font-size:15.1px;color:rgb(9,146,118);font-weight:normal;font-style:normal;text-decoration: none}
+span.cls_008{font-family:"Trebuchet MS",serif;font-size:15.1px;color:rgb(0,0,0);font-weight:normal;font-style:normal;text-decoration: none}
+div.cls_008{font-family:"Trebuchet MS",serif;font-size:15.1px;color:rgb(0,0,0);font-weight:normal;font-style:normal;text-decoration: none}
+span.cls_009{font-family:Arial,serif;font-size:15.1px;color:rgb(255,255,255);font-weight:normal;font-style:normal;text-decoration: none}
+div.cls_009{font-family:Arial,serif;font-size:15.1px;color:rgb(255,255,255);font-weight:normal;font-style:normal;text-decoration: none}
+span.cls_009{font-family:Arial,serif;font-size:5.1px;color:rgb(255,255,255);font-weight:normal;font-style:normal;text-decoration: none}
+div.cls_009{font-family:Arial,serif;font-size:5.1px;color:rgb(255,255,255);font-weight:normal;font-style:normal;text-decoration: none}
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+
+</style>
+</head>
+<body>
+<div style="position:absolute;left:50%;margin-left:-306px;top:0px;width:612px;height:792px;border-style:outset;overflow:hidden">
+<div style="position:absolute;left:0px;top:0px">
+<img src="https://firebasestorage.googleapis.com/v0/b/docaid-api.appspot.com/o/reportsPdf%2Fbackground1.jpg?alt=media&token=553f3e0c-2ef9-4133-aa5d-46d71007f665" width=612 height=792></div>
+<div style="position:absolute;left:203.21px;top:91.10px" class="cls_003"><span class="cls_003">Manipal Hospital</span></div>
+<div style="position:absolute;left:178.22px;top:147.02px" class="cls_005"><span class="cls_005">Technical Solution to all health problems</span></div>
+<div style="position:absolute;left:419.71px;top:201.62px" class="cls_002"><span class="cls_002">DR. Rohit Nagraj</span></div>
+<div style="position:absolute;left:70.71px;top:201.62px" class="cls_002"><span class="cls_002">Name: {{name}}</span></div>
+<div style="position:absolute;left:362.47px;top:230.42px" class="cls_007"><span class="cls_007">M.B.B.S, MS (SURG.) FAIS, FMAS</span></div>
+<div style="position:absolute;left:70.71px;top:230.42px" class="cls_002"><span class="cls_002">Age: {{age}}, BMI: {{bmi}}</span></div>
+<div style="position:absolute;left:70.22px;top:300.02px" class="cls_005"><span class="cls_005">
+
+<table>
+    <tr>
+      <th>Medicine</th>
+      <th>Dosage</th>
+      <th>Quantity Info</th>
+    </tr>
+    {% for dose in dosages %}
+    <tr>
+      <td>{{dose.name}}</td>
+      <td>{{dose.dosage}}</td>
+      <td>{{dose.qty}}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</span>
+</div>
+<div style="position:absolute;left:459.94px;top:700.54px" class="cls_008"><span class="cls_008">Manipal Hospital</span></div>
+<div style="position:absolute;left:410.83px;top:721.54px" class="cls_008"><span class="cls_008">Mang., Karnataka, India</span></div>
+<div style="position:absolute;left:65.30px;top:760.44px" class="cls_009"><span class="cls_009">+91 9457132850</span></div>
+<div style="position:absolute;left:241.25px;top:758.76px" class="cls_009"><span class="cls_009">raghav.ddps2@gmail.com</span></div>
+</div>
+
+</body>
+</html>
