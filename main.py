@@ -29,11 +29,11 @@ def prediction():
 
     if request.method == 'POST':
 
-        model = pickle.load(open('medpredMLP.pickle', 'rb'))
+        model = pickle.load(open('medpred.pickle', 'rb'))
         dummydata = model.predict([data])
         d = str(dummydata[0])
         print(type(d), d)
-        with open('medicine.json') as json_file:
+        with open('Medicine.json') as json_file:
             jdata = json.load(json_file)
             # print(jdata)
             data = jdata[d]
@@ -206,9 +206,10 @@ def socket_server():
 
 
 if __name__ == '__main__':
-    host = "34.93.126.224"
-    port = 5500
+    app.run(debug=True)
+#     host = "34.93.126.224"
+#     port = 5500
 
-    client = socket.socket()
-    client.connect((host, port))
-    app.run(host='0.0.0.0', port=5000, debug=True)
+#     client = socket.socket()
+#     client.connect((host, port))
+#     app.run(host='0.0.0.0', port=5000, debug=True)
