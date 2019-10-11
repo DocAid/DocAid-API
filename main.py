@@ -213,7 +213,7 @@ def index():
     return "Welcome to DocAid-API"
 
 
-@app.route('/socket_conn', methods=['GET'])
+@app.route('/socket_conn', methods=['POST'])
 def socket_server():
 
     # Work for raghav: pull user data from firebase and put it in data
@@ -228,7 +228,7 @@ def socket_server():
 
 
 if __name__ == '__main__':
-    host = "34.93.126.224"
+    host = "34.93.231.96"
     # host = socket.gethostname()
     port = 5500
 
