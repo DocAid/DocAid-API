@@ -1,8 +1,6 @@
 
 from flask import Flask, redirect, url_for, request, jsonify
 from firebase_admin import credentials, firestore, initialize_app
-import pickle
-import socket
 import json
 app = Flask(__name__)
 cred = credentials.Certificate('key.json')
@@ -23,28 +21,34 @@ diagnosis_keywords = db.collection('diagnosis_keywords')
 @app.route('/prediction', methods=['POST'])
 def prediction():
 
+    s = ['skin_rash', 'continuous_sneezing', 'acidity', 'fatigue', 'nausea', 'loss_of_appetite',
+         'chest_pain', 'fast_heart_rate', 'bladder_discomfort', 'muscle_pain', 'prognosis']
     requestData = request.json
     print(requestData)
     data = requestData['val']
+    symptom = []
+    for i in range(0, 10):
+        if data[i] == 1:
+            symptom.append(s[i])
 
     if request.method == 'POST':
+        dummyData = {
+            "message": "Reply aaya be",
+            "symptoms": symptom,
+            "Alergy": [
+                0, {
+                    "Hydroxyzine": [1, 0, 1, 600],
+                    "Levocetirizine": [2, 0, 1, 400],
+                    "Xyzal": [3, 0, 1, 500],
+                    "Vistaril": [4, 0, 1, 650],
+                    "Doxylamine": [5, 0, 1, 500]
+                }
+            ]
+        }
+        return dummyData
 
-        model = pickle.load(open('medpredMLP.pickle', 'rb'))
-        dummydata = model.predict([data])
-        d = str(dummydata[0])
-        print(type(d), d)
-        with open('medicine.json') as json_file:
-            jdata = json.load(json_file)
-            # print(jdata)
-            data = jdata[d]
-        # data = jsonify(dummydata)
-        print(data)
-        ndata = {d: data}
-        jsondata = jsonify(ndata)
-        return jsondata
-
-
-@app.route('/patient_details', methods=['POST', 'GET'])
+#working
+@app.route('/patient_details',methods=['POST','GET'])
 def patient_details_api():
 
     requestData = request.json
@@ -53,9 +57,9 @@ def patient_details_api():
     if request.method == 'POST':
         res = patient_details.document(pid).set(request.json)
         data = {
-
-            "message": "patient_added",
-            "pid": pid
+            
+            "message":"patient_added",
+            "pid": pid 
         }
         return data
     elif request.method == 'GET':
@@ -65,16 +69,15 @@ def patient_details_api():
         return "Invalid request"
 
 
+#Modify the PUT one.
 @app.route('/diagonized_medicines', methods=['POST', 'GET', 'PUT'])
 def diagonized_medicines():
-    requestData = request.json
+    requestData = request.json  
     pid = requestData['pid']
-    if(request.method == 'POST'):
 
+    if(request.method == 'POST'):
         timestamp = requestData['timestamp']
-        sendData = {}
-        sendData[timestamp] = requestData
-        medicines_diagonized.document(pid).set(sendData)
+        medicines_diagonized.document(pid).set(request.json)
         data = {
             "message": "Medicines stored for first time",
             "pid": pid,
@@ -92,16 +95,15 @@ def diagonized_medicines():
             #Thats just json, manipulation, in the api, we will just update the value, whenever a put request is received.
         '''
         # The requestData will obviously change as is sent in the request.
-
-        timestamp = requestData['timestamp']
         data = medicines_diagonized.document(pid).get()
         data = data.to_dict()
         json_data = {}
-        for key in data.keys():
-            json_data[key] = data[key]
-        json_data[timestamp] = requestData
+        json_data.append(data)
+        json_data.append(requestData)
         print(json_data)
-        medicines_diagonized.document(pid).update(json_data)
+        json_data = json.dumps(json_data)
+        print(type(json_data))
+        medicines_diagonized.document(pid).update(json.loads(json_data))
         data = {
             "message": "Medicines updated",
             "pid": pid,
@@ -116,12 +118,8 @@ def diagonized_medicines():
     else:
         return "Invalid request"
 
-
-@app.route('/keywords', methods=['GET', 'PUT', 'POST'])
-def keywords():
-
-
-@app.route('/keywords', methods=['GET', 'PUT', 'POST'])
+#Have to check PUT method.
+@app.route('/keywords',methods=['GET','PUT','POST'])
 def keywords():
 
     requestData = request.json
@@ -129,14 +127,12 @@ def keywords():
 
     if(request.method == 'POST'):
         timestamp = requestData['timestamp']
-        sendData = {}
-        sendData[timestamp] = requestData
-        diagnosis_keywords.document(pid).set(sendData)
+        diagnosis_keywords.document(pid).set(request.json)
         data = {
-            "message": "Keywords stored!!!",
-            "pid": pid,
-            "timestamp": timestamp
-        }
+                "message":"Keywords stored!!!",
+                "pid": pid,
+                "timestamp":timestamp
+            }
         return data
 
     elif request.method == 'PUT':
@@ -150,26 +146,15 @@ def keywords():
 
             #Thats just json, manipulation, in the api, we will just update the value, whenever a put request is received.
         '''
-        # The requestData will obviously change as is sent in the request.
-
-        timestamp = requestData['timestamp']
-        data = diagnosis_keywords.document(pid).get()
-        print(data)
-        data = data.to_dict()
-        json_data = {}
-        print(data)
-        for key in data.keys():
-            json_data[key] = data[key]
-        print(json_data)
-        json_data[timestamp] = requestData
-        diagnosis_keywords.document(pid).update(json_data)
+        #The requestData will obviously change as is sent in the request.
+        diagnosis_keywords.document(pid).update(requestData)
         data = {
-            "message": "Keywords updated",
-            "pid": pid,
+            "message":"Keywords updated",
+            "pid":pid,
         }
         return data
 
-    # This will be used while generating the prescription.
+    #This will be used while generating the prescription.
     elif(request.method == 'GET'):
         data = diagnosis_keywords.document(pid).get()
         return jsonify(data.to_dict())
@@ -177,30 +162,10 @@ def keywords():
     else:
         return "Invalid request"
 
-
 @app.route('/')
 def index():
     return "Welcome to DocAid-API"
 
 
-@app.route('/socket_conn', methods=['GET'])
-def socket_server():
-
-    # Work for raghav: pull user data from firebase and put it in data
-    # if data not in firebase, return unsuccessful
-
-    data = request.json
-    pid = data['pid']
-    data = patient_details.document(pid).get()
-    data = jsonify(data.to_dict())
-    client.send(data.encode())
-    return "Hello World"
-
-
 if __name__ == '__main__':
-    host = "34.93.126.224"
-    port = 5500
-
-    client = socket.socket()
-    client.connect((host, port))
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(debug=True)
