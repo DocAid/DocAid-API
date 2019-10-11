@@ -1,15 +1,19 @@
 import socket
 import _thread
+import pickle
 
 
 def new_client(client, addr, clientID, clients):
     while True:
-        data = client.recv(2048).decode()
-        if data:
+        try:
+            data = pickle.loads(client.recv(2048))
+        except EOFError:
+            pass
+        else:
             print(data, " : ", clientID)
             if clientID == 1:
                 c = clients[-1][0]
-                c.send(data.encode())
+                c.send(pickle.dumps(data))
                 del clients[-1]
     client.close()
 

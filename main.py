@@ -26,40 +26,43 @@ diagnosis_keywords = db.collection('diagnosis_keywords')
 def prediction():
 
     requestData = request.json
-    print(requestData)
     data = requestData['val']
 
     if request.method == 'POST':
-        s = ['skin_rash','continuous_sneezing','acidity','fatigue','nausea','loss_of_appetite','chest_pain','fast_heart_rate','bladder_discomfort','muscle_pain','prognosis']
-        symptoms = []
-        for i in range(0,10):
-            if data[i] == 1:
-                symptoms.append(s[i])
+        s = ['skin_rash', 'continuous_sneezing', 'acidity', 'fatigue', 'nausea',
+             'loss_of_appetite', 'chest_pain', 'fast_heart_rate', 'bladder_discomfort', 'muscle_pain',
+             'prognosis']
+
+        symptoms = [s[i] for i in range(len(s)) if i == 1]
+
         model = pickle.load(open('medpredMLP.pickle', 'rb'))
         dummydata = model.predict([data])
+
         d = str(dummydata[0])
-        print(type(d), d)
+        print(d)
         with open('Medicine.json') as json_file:
             jdata = json.load(json_file)
-            print(jdata)
             data = jdata[d]
-        # data = jsonify(dummydata)
-        
+        # data = jsonify(list(dummydata))
+        print("\n\n", data)
         class_probs = np.array(model.predict_proba([data]))
         probs = class_probs
-        i,max1 = np.argmax(probs),np.amax(probs)
-        ddata = np.delete(probs,i)
-        j,max2 = np.argmax(ddata),np.amax(ddata)
-        
+        # i, max1 = np.argmax(probs), np.amax(probs)
+        # ddata = np.delete(probs, i)
+        # j, max2 = np.argmax(ddata), np.amax(ddata)
+
+        # print(type(j), type())
+
         # dis1 = data
         # prid1 = 0
 
-        ndata = {d: data}
-        list1 = []
-        list1.append(ndata)
-        list1.append(symptoms)
-        jsondata = jsonify(list1)
-        return jsondata
+        # ndata = {str(d): data}
+        # list1 = []
+        # list1.append(ndata)
+        # list1.append(symptoms)
+        # jsondata = jsonify(list1)
+        # return jsondata
+        return "Hello World"
 
 
 @app.route('/patient_details', methods=['POST', 'GET'])
@@ -213,7 +216,7 @@ def index():
     return "Welcome to DocAid-API"
 
 
-@app.route('/socket_conn', methods=['GET'])
+@app.route('/socket_conn', methods=['POST'])
 def socket_server():
 
     # Work for raghav: pull user data from firebase and put it in data
@@ -222,13 +225,13 @@ def socket_server():
     data = request.json
     pid = data['pid']
     data = patient_details.document(pid).get()
-    data = jsonify(data.to_dict())
-    client.send(data.encode())
+    data = pickle.dumps(data.to_dict())
+    client.send(data)
     return "Hello World"
 
 
 if __name__ == '__main__':
-    host = "34.93.126.224"
+    host = "34.93.231.96"
     # host = socket.gethostname()
     port = 5500
 
