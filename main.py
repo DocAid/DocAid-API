@@ -1,7 +1,8 @@
 
-from flask import Flask, redirect, url_for, request, jsonify,render_template
+from flask import Flask, redirect, url_for, request, jsonify, render_template
 from firebase_admin import credentials, firestore, initialize_app
 import pickle
+from collections import OrderedDict
 import socket
 import json
 import numpy as np
@@ -14,7 +15,7 @@ default_app = initialize_app(cred)
 db = firestore.client()
 
 config = {
-       "apiKey": "AIzaSyAmAnf-0bRmvGjRkJJgpZkDiZ3nRIFlBhw",
+    "apiKey": "AIzaSyAmAnf-0bRmvGjRkJJgpZkDiZ3nRIFlBhw",
     "authDomain": "docaid-api.firebaseapp.com",
     "databaseURL": "https://docaid-api.firebaseio.com",
     "projectId": "docaid-api",
@@ -39,7 +40,7 @@ reports = db.collection('reportsUrl')
 # API3: diagnosis_keywords_api [POST GET and PUT]
 
 
-@app.route('/rg',methods=['POST'])
+@app.route('/rg', methods=['POST'])
 def genPdf():
     if request.method == 'POST':
         data = request.json
@@ -47,66 +48,114 @@ def genPdf():
         pid = data['pid']
         dosages = data['dosages']
         bmi = data['bmi']
-        x = render_template('r.html',pid=pid,age=age,bmi=bmi,dosages=dosages)
+        x = render_template('r.html', pid=pid, age=age,
+                            bmi=bmi, dosages=dosages)
         print(x)
-        pdfkit.from_string(x,'report1.pdf')
+        pdfkit.from_string(x, 'report1.pdf')
         report = str(pid)
         storage.child('reportsPdf/{}'.format(report)).put('report1.pdf')
         pdf_url = storage.child('reportsPdf/{}'.format(report)).get_url(None)
         data = {
-            'pdf_url':pdf_url
+            'pdf_url': pdf_url
         }
         res = reports.document(pid).set(data)
         return pdf_url
-    
-@app.route('/sendReportToDB',methods=['POST'])
+
+
+@app.route('/sendReportToDB', methods=['POST'])
 def getReport():
     requestData = request.json
     pid = requestData['pid']
     data = reports.document(pid).get()
     return jsonify(data.to_dict())
 
+
 @app.route('/prediction', methods=['POST'])
 def prediction():
 
     requestData = request.json
+    print(requestData)
     data = requestData['val']
 
     if request.method == 'POST':
-        s = ['skin_rash', 'continuous_sneezing', 'acidity', 'fatigue', 'nausea',
-             'loss_of_appetite', 'chest_pain', 'fast_heart_rate', 'bladder_discomfort', 'muscle_pain',
-             'prognosis']
-
-        symptoms = [s[i] for i in range(len(s)) if i == 1]
-
+        s = ['skin_rash', 'continuous_sneezing', 'acidity', 'fatigue', 'nausea', 'loss_of_appetite',
+             'chest_pain', 'fast_heart_rate', 'bladder_discomfort', 'muscle_pain', 'prognosis']
+        diseases = ['Allergy', 'Cold', 'Dengue', 'Fungal_infection', 'Malaria',
+                    'Migrane', 'Pneumonia', 'Typhoid', 'Urinary_tract_infection', 'Tuberculosis']
+        symptoms = []
+        for i in range(0, 10):
+            if data[i] == 1:
+                symptoms.append(s[i])
         model = pickle.load(open('medpredMLP.pickle', 'rb'))
-        dummydata = model.predict([data])
-
-        d = str(dummydata[0])
-        print(d)
+        # dummydata = model.predict([data])
+        # d = str(dummydata[0])
+        # print(type(d), d)
         with open('Medicine.json') as json_file:
             jdata = json.load(json_file)
-            data = jdata[d]
-        # data = jsonify(list(dummydata))
-        print("\n\n", data)
+            # print(jdata)
+        #     data = jdata[d]
+        # data = jsonify(dummydata)
+
         class_probs = np.array(model.predict_proba([data]))
-        probs = class_probs
-        # i, max1 = np.argmax(probs), np.amax(probs)
-        # ddata = np.delete(probs, i)
-        # j, max2 = np.argmax(ddata), np.amax(ddata)
+        i, max1 = np.argsort(np.max(class_probs, axis=0)
+                             )[-1], class_probs[0][i]
+        j, max2 = np.argsort(np.max(class_probs, axis=0)
+                             )[-2], class_probs[0][i]
 
-        # print(type(j), type())
+        # print(ddata)
+        dis1 = jdata[diseases[i]][1]
+        prid1 = []
+        for u in dis1:
+            med = dis1[u]
+            priority = (med[0]-3*med[1]-7*med[2])*max1
+            prid1.append(priority)
+            dis1[u][-1] = priority
 
-        # dis1 = data
-        # prid1 = 0
+        print(dis1)
+        np.array(prid1)
+        k = np.argsort(prid1)[::-1]
+        print(k)
+        # for key,values in dis1.items():
+        klist = [x for x in dis1]
+        # print(klist)
+        flist = []
+        for o in k:
+            flist.append(klist[o])
+        # print(flist)
+        # np.sort(prid1)
+        ndata = OrderedDict()
+        for t in flist:
+            ndata[t] = dis1[t]
+            # ndata = ndata.append({t:dis1[t]})
+        print(ndata)
+        dis2 = jdata[diseases[j]][1]
+        # print(dis2)
+        prid2 = []
+        for u in dis2:
+            med = dis2[u]
+            priority = (med[0]-3*med[1]-2*med[2])*max2
+            prid2.append(priority)
+            dis2[u][-1] = priority
 
-        # ndata = {str(d): data}
+        l = np.argsort(prid2)[::-1]
+        llist = [x for x in dis2]
+        # print(llist)
+        fllist = []
+        for o in l:
+            fllist.append(llist[o])
+        # print(fllist)
+        # print(dis2)
+        for t in fllist:
+            ndata[t] = dis2[t]
+        print(ndata)
+
+        # ndata = {d: data}
         # list1 = []
+        # list2 = []
         # list1.append(ndata)
         # list1.append(symptoms)
-        # jsondata = jsonify(list1)
-        # return jsondata
-        return "Hello World"
+        np.random.seed(0)
+        return json.dumps([ndata, symptoms])
 
 
 @app.route('/patient_details', methods=['POST', 'GET'])
@@ -273,14 +322,12 @@ def socket_server():
     client.send(data)
     return "Hello World"
 
-           
-
 
 if __name__ == '__main__':
     host = "34.93.231.96"
     # host = socket.gethostname()
-    # port = 5500
+    port = 5500
 
-    # client = socket.socket()
-    # client.connect((host, port))
+    client = socket.socket()
+    client.connect((host, port))
     app.run(debug=True)
