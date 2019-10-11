@@ -47,6 +47,7 @@ def prediction():
         }
         return dummyData
 
+#working
 @app.route('/patient_details',methods=['POST','GET'])
 def patient_details_api():
 
@@ -68,17 +69,15 @@ def patient_details_api():
         return "Invalid request"
 
 
+#Modify the PUT one.
 @app.route('/diagonized_medicines', methods=['POST', 'GET', 'PUT'])
 def diagonized_medicines():
-    requestData = request.json
-    
+    requestData = request.json  
     pid = requestData['pid']
-    if(request.method == 'POST'):
 
+    if(request.method == 'POST'):
         timestamp = requestData['timestamp']
-        sendData = {}
-        sendData[timestamp] = requestData
-        medicines_diagonized.document(pid).set(sendData)
+        medicines_diagonized.document(pid).set(request.json)
         data = {
             "message": "Medicines stored for first time",
             "pid": pid,
@@ -96,16 +95,15 @@ def diagonized_medicines():
             #Thats just json, manipulation, in the api, we will just update the value, whenever a put request is received.
         '''
         # The requestData will obviously change as is sent in the request.
-
-        timestamp = requestData['timestamp']
         data = medicines_diagonized.document(pid).get()
         data = data.to_dict()
         json_data = {}
-        for key in data.keys():
-            json_data[key] = data[key]
-        json_data[timestamp] = requestData
-        print(json_data) 
-        medicines_diagonized.document(pid).update(json_data)
+        json_data.append(data)
+        json_data.append(requestData)
+        print(json_data)
+        json_data = json.dumps(json_data)
+        print(type(json_data))
+        medicines_diagonized.document(pid).update(json.loads(json_data))
         data = {
             "message": "Medicines updated",
             "pid": pid,
@@ -120,6 +118,7 @@ def diagonized_medicines():
     else:
         return "Invalid request"
 
+#Have to check PUT method.
 @app.route('/keywords',methods=['GET','PUT','POST'])
 def keywords():
 
@@ -128,9 +127,7 @@ def keywords():
 
     if(request.method == 'POST'):
         timestamp = requestData['timestamp']
-        sendData = {}
-        sendData[timestamp] = requestData
-        diagnosis_keywords.document(pid).set(sendData)
+        diagnosis_keywords.document(pid).set(request.json)
         data = {
                 "message":"Keywords stored!!!",
                 "pid": pid,
@@ -150,18 +147,7 @@ def keywords():
             #Thats just json, manipulation, in the api, we will just update the value, whenever a put request is received.
         '''
         #The requestData will obviously change as is sent in the request.
-
-        timestamp = requestData['timestamp']
-        data = diagnosis_keywords.document(pid).get()
-        print(data)
-        data = data.to_dict()
-        json_data = {}
-        print(data)
-        for key in data.keys():
-            json_data[key] = data[key]
-        print(json_data)
-        json_data[timestamp] = requestData
-        diagnosis_keywords.document(pid).update(json_data)
+        diagnosis_keywords.document(pid).update(requestData)
         data = {
             "message":"Keywords updated",
             "pid":pid,
