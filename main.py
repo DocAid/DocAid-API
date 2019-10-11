@@ -65,6 +65,18 @@ def patient_details_api():
         return "Invalid request"
 
 
+
+@app.route('/diagonized_medicines_1',methods=['POST'])
+def diagonized_medicines_1():
+    requestData = request.json
+    pid = requestData['pid']
+
+    if(request.method == 'POST'):
+        data = medicines_diagonized.document(pid).get()
+        return jsonify(data.to_dict())
+    else:
+        return "Invalid request"
+
 @app.route('/diagonized_medicines', methods=['POST', 'GET', 'PUT'])
 def diagonized_medicines():
     requestData = request.json
