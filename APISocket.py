@@ -17,7 +17,8 @@ def index():
 
 
 if __name__ == '__main__':
-    host = socket.gethostname()
+    host = "34.93.126.224"
+    # host = socket.gethostname()
     port = 5500
 
     client = socket.socket()
