@@ -4,6 +4,7 @@ from firebase_admin import credentials, firestore, initialize_app
 import pickle
 import socket
 import json
+import sklearn
 app = Flask(__name__)
 cred = credentials.Certificate('key.json')
 default_app = initialize_app(cred)
@@ -207,6 +208,7 @@ def socket_server():
 
 if __name__ == '__main__':
     host = "34.93.126.224"
+    # host = socket.gethostname()
     port = 5500
 
     client = socket.socket()
