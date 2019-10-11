@@ -23,13 +23,13 @@ def main():
     clientID = -1
     # get the hostname
     # host = socket.gethostname()
-    host = "34.93.126.224"
+    host = "34.93.231.96"
 
     port = 5500
 
     server = socket.socket()
     server.bind((host, port))
-    server.listen(3)
+    server.listen(4)
     print("Server started. Listening on port: ", port)
 
     while True:
