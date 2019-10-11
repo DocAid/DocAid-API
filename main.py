@@ -4,6 +4,7 @@ from firebase_admin import credentials, firestore, initialize_app
 import pickle
 import socket
 import json
+import numpy as np
 app = Flask(__name__)
 cred = credentials.Certificate('key.json')
 default_app = initialize_app(cred)
@@ -29,18 +30,29 @@ def prediction():
 
     if request.method == 'POST':
 
+        s = ['skin_rash','continuous_sneezing','acidity','fatigue','nausea','loss_of_appetite','chest_pain','fast_heart_rate','bladder_discomfort','muscle_pain','prognosis']
+        symptoms = []
+        for i in range(0,10):
+            if data[i] == 1:
+                symptoms.append(s[i])
         model = pickle.load(open('medpredMLP.pickle', 'rb'))
         dummydata = model.predict([data])
         d = str(dummydata[0])
         print(type(d), d)
-        with open('medicine.json') as json_file:
+        with open('Medicine.json') as json_file:
             jdata = json.load(json_file)
             # print(jdata)
             data = jdata[d]
         # data = jsonify(dummydata)
-        print(data)
+        class_probs = np.array(model.predict_proba([data]))
+        
+        
         ndata = {d: data}
-        jsondata = jsonify(ndata)
+        
+        list1 = []
+        list1.append(ndata)
+        list1.append(symptoms)
+        jsondata = jsonify(list1)
         return jsondata
 
 
