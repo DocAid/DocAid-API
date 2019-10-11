@@ -30,7 +30,6 @@ def prediction():
     data = requestData['val']
 
     if request.method == 'POST':
-
         s = ['skin_rash','continuous_sneezing','acidity','fatigue','nausea','loss_of_appetite','chest_pain','fast_heart_rate','bladder_discomfort','muscle_pain','prognosis']
         symptoms = []
         for i in range(0,10):
@@ -91,6 +90,10 @@ def diagonized_medicines_1():
 
     if(request.method == 'POST'):
         data = medicines_diagonized.document(pid).get()
+        d = data.to_dict()
+        l = []
+        for key in d:
+            l.append(d[key])
         return jsonify(data.to_dict())
     else:
         return "Invalid request"
