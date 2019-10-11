@@ -65,8 +65,7 @@ def patient_details_api():
         return "Invalid request"
 
 
-
-@app.route('/diagonized_medicines_1',methods=['POST'])
+@app.route('/diagonized_medicines_1', methods=['POST'])
 def diagonized_medicines_1():
     requestData = request.json
     pid = requestData['pid']
@@ -76,6 +75,7 @@ def diagonized_medicines_1():
         return jsonify(data.to_dict())
     else:
         return "Invalid request"
+
 
 @app.route('/diagonized_medicines', methods=['POST', 'GET', 'PUT'])
 def diagonized_medicines():
@@ -207,9 +207,9 @@ def socket_server():
 
 if __name__ == '__main__':
     app.run(debug=True)
-#     host = "34.93.126.224"
-#     port = 5500
+    host = "34.93.126.224"
+    port = 5500
 
-#     client = socket.socket()
-#     client.connect((host, port))
-#     app.run(host='0.0.0.0', port=5000, debug=True)
+    client = socket.socket()
+    client.connect((host, port))
+    app.run(host='0.0.0.0', port=5000, debug=True)
