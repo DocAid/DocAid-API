@@ -29,8 +29,12 @@ def prediction():
     data = requestData['val']
 
     if request.method == 'POST':
-
-        model = pickle.load(open('medpred.pickle', 'rb'))
+        s = ['skin_rash','continuous_sneezing','acidity','fatigue','nausea','loss_of_appetite','chest_pain','fast_heart_rate','bladder_discomfort','muscle_pain','prognosis']
+        symptoms = []
+        for i in range(0,10):
+            if data[i] == 1:
+                symptoms.append(s[i])
+        model = pickle.load(open('medpredMLP.pickle', 'rb'))
         dummydata = model.predict([data])
         d = str(dummydata[0])
         print(type(d), d)
@@ -39,9 +43,13 @@ def prediction():
             # print(jdata)
             data = jdata[d]
         # data = jsonify(dummydata)
-        print(data)
+        print(type(data))
         ndata = {d: data}
-        jsondata = jsonify(ndata)
+        print(type(ndata))
+        list1 = []
+        list1.append(ndata)
+        list1.append(symptoms)
+        jsondata = jsonify(list1)
         return jsondata
 
 
@@ -73,6 +81,10 @@ def diagonized_medicines_1():
 
     if(request.method == 'POST'):
         data = medicines_diagonized.document(pid).get()
+        d = data.to_dict()
+        l = []
+        for key in d:
+            l.append(d[key])
         return jsonify(data.to_dict())
     else:
         return "Invalid request"
