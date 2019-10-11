@@ -29,7 +29,7 @@ def prediction():
 
     if request.method == 'POST':
 
-        model = pickle.load(open('medpred.pickle', 'rb'))
+        model = pickle.load(open('medpredMLP.pickle', 'rb'))
         dummydata = model.predict([data])
         d = str(dummydata[0])
         print(type(d), d)
