@@ -206,7 +206,6 @@ def socket_server():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
     host = "34.93.126.224"
     port = 5500
 
