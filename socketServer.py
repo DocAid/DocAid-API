@@ -23,7 +23,7 @@ def main():
     clientID = -1
     # get the hostname
     # host = socket.gethostname()
-    host = "34.93.231.96"
+    host = "34.93.126.224"
 
     port = 5500
 

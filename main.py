@@ -231,7 +231,7 @@ def socket_server():
 
 
 if __name__ == '__main__':
-    host = "34.93.231.96"
+    host = "34.93.126.224"
     # host = socket.gethostname()
     port = 5500
 
