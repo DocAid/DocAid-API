@@ -304,7 +304,7 @@ def keywords():
         return "Invalid request"
 
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index():
     return "Welcome to DocAid-API"
 
@@ -330,4 +330,4 @@ if __name__ == '__main__':
 
     client = socket.socket()
     client.connect((host, port))
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)
