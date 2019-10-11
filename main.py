@@ -44,7 +44,7 @@ def prediction():
         return jsondata
 
 
-@app.route('/patient_details',methods=['POST','GET'])
+@app.route('/patient_details', methods=['POST', 'GET'])
 def patient_details_api():
 
     requestData = request.json
@@ -53,9 +53,9 @@ def patient_details_api():
     if request.method == 'POST':
         res = patient_details.document(pid).set(request.json)
         data = {
-            
-            "message":"patient_added",
-            "pid": pid 
+
+            "message": "patient_added",
+            "pid": pid
         }
         return data
     elif request.method == 'GET':
@@ -67,7 +67,7 @@ def patient_details_api():
 
 @app.route('/diagonized_medicines', methods=['POST', 'GET', 'PUT'])
 def diagonized_medicines():
-    requestData = request.json  
+    requestData = request.json
     pid = requestData['pid']
     if(request.method == 'POST'):
 
@@ -100,7 +100,7 @@ def diagonized_medicines():
         for key in data.keys():
             json_data[key] = data[key]
         json_data[timestamp] = requestData
-        print(json_data) 
+        print(json_data)
         medicines_diagonized.document(pid).update(json_data)
         data = {
             "message": "Medicines updated",
@@ -116,10 +116,12 @@ def diagonized_medicines():
     else:
         return "Invalid request"
 
-@app.route('/keywords',methods=['GET','PUT','POST'])
+
+@app.route('/keywords', methods=['GET', 'PUT', 'POST'])
 def keywords():
 
-@app.route('/keywords',methods=['GET','PUT','POST'])
+
+@app.route('/keywords', methods=['GET', 'PUT', 'POST'])
 def keywords():
 
     requestData = request.json
@@ -131,10 +133,10 @@ def keywords():
         sendData[timestamp] = requestData
         diagnosis_keywords.document(pid).set(sendData)
         data = {
-                "message":"Keywords stored!!!",
-                "pid": pid,
-                "timestamp":timestamp
-            }
+            "message": "Keywords stored!!!",
+            "pid": pid,
+            "timestamp": timestamp
+        }
         return data
 
     elif request.method == 'PUT':
@@ -148,7 +150,7 @@ def keywords():
 
             #Thats just json, manipulation, in the api, we will just update the value, whenever a put request is received.
         '''
-        #The requestData will obviously change as is sent in the request.
+        # The requestData will obviously change as is sent in the request.
 
         timestamp = requestData['timestamp']
         data = diagnosis_keywords.document(pid).get()
@@ -162,18 +164,19 @@ def keywords():
         json_data[timestamp] = requestData
         diagnosis_keywords.document(pid).update(json_data)
         data = {
-            "message":"Keywords updated",
-            "pid":pid,
+            "message": "Keywords updated",
+            "pid": pid,
         }
         return data
 
-    #This will be used while generating the prescription.
+    # This will be used while generating the prescription.
     elif(request.method == 'GET'):
         data = diagnosis_keywords.document(pid).get()
         return jsonify(data.to_dict())
 
     else:
         return "Invalid request"
+
 
 @app.route('/')
 def index():
@@ -189,7 +192,7 @@ def socket_server():
     data = request.json
     pid = data['pid']
     data = patient_details.document(pid).get()
-    data =  jsonify(data.to_dict())
+    data = jsonify(data.to_dict())
     client.send(data.encode())
     return "Hello World"
 
@@ -200,4 +203,4 @@ if __name__ == '__main__':
 
     client = socket.socket()
     client.connect((host, port))
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
