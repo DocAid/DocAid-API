@@ -1,3 +1,3 @@
-# Api documentation coming soon.
+# DocAid API documentation 
 
-### Temporary working guidelines have been provided in the app.py file itself.
+### Working guidelines have been provided in the app.py file itself, as comments.
