@@ -76,13 +76,15 @@ def prediction():
     requestData = request.json
     print(requestData)
     data = requestData['val']
-
+    patient = requestData['patient']
     if request.method == 'POST':
         s = ['skin_rash', 'continuous_sneezing', 'acidity', 'fatigue', 'nausea', 'loss_of_appetite',
              'chest_pain', 'fast_heart_rate', 'bladder_discomfort', 'muscle_pain', 'prognosis']
         diseases = ['Allergy', 'Cold', 'Dengue', 'Fungal infection', 'Malaria',
                     'Migrane', 'Pneumonia', 'Typhoid', 'Urinary tract infection', 'Tuberculosis']
         symptoms = []
+        alcohol = patient['alc']
+        pregnancy = patient['preg']
         for i in range(0, 10):
             if data[i] == 1:
                 symptoms.append(s[i])
@@ -107,7 +109,7 @@ def prediction():
         prid1 = []
         for u in dis1:
             med = dis1[u]
-            priority = (med[0]-3*med[1]-7*med[2])*max1
+            priority = (med[0]-3*alcohol-7*pregnancy)*max1
             prid1.append(priority)
             dis1[u][-1] = priority
 
@@ -133,7 +135,7 @@ def prediction():
         prid2 = []
         for u in dis2:
             med = dis2[u]
-            priority = (med[0]-3*med[1]-2*med[2])*max2
+            priority = (med[0]-3*alcohol-2*pregnancy)*max2
             prid2.append(priority)
             dis2[u][-1] = priority
 
