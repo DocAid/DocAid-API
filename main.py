@@ -319,9 +319,7 @@ def socket_server():
 
     data = request.json
     pid = data['pid']
-    data = patient_details.document(pid).get()
-    data = pickle.dumps(data.to_dict())
-    client.send(data)
+    client.send(pickle.dumps(pid))
     return "Hello World"
 
 
