@@ -155,7 +155,7 @@ def prediction():
         # list1.append(ndata)
         # list1.append(symptoms)
         np.random.seed(0)
-        return json.dumps([ndata, symptoms])
+        return pickle.dumps([ndata, symptoms])
 
 
 @app.route('/patient_details', methods=['POST', 'GET'])
