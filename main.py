@@ -82,10 +82,9 @@ def prediction():
              'chest_pain', 'fast_heart_rate', 'bladder_discomfort', 'muscle_pain', 'prognosis']
         diseases = ['Allergy', 'Cold', 'Dengue', 'Fungal_infection', 'Malaria',
                     'Migrane', 'Pneumonia', 'Typhoid', 'Urinary_tract_infection', 'Tuberculosis']
-        symptoms = []
-        for i in range(0, 10):
-            if data[i] == 1:
-                symptoms.append(s[i])
+
+        symptoms = [s[i] for i in range(10) if data[i] == 1]
+
         model = pickle.load(open('medpredMLP.pickle', 'rb'))
         # dummydata = model.predict([data])
         # d = str(dummydata[0])
@@ -324,8 +323,8 @@ def socket_server():
 
 
 if __name__ == '__main__':
-    host = "34.93.231.96"
-    # host = socket.gethostname()
+    # host = "34.93.231.96"
+    host = socket.gethostname()
     port = 5500
 
     client = socket.socket()

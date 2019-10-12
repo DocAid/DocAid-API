@@ -24,10 +24,12 @@ def prediction():
     data = requestData['val']
 
     if request.method == 'POST':
-        s = ['skin_rash','continuous_sneezing','acidity','fatigue','nausea','loss_of_appetite','chest_pain','fast_heart_rate','bladder_discomfort','muscle_pain','prognosis']
-        diseases = ['Allergy','Cold','Dengue','Fungal_infection','Malaria','Migrane','Pneumonia','Typhoid','Urinary_tract_infection','Tuberculosis']
+        s = ['skin_rash', 'continuous_sneezing', 'acidity', 'fatigue', 'nausea', 'loss_of_appetite',
+             'chest_pain', 'fast_heart_rate', 'bladder_discomfort', 'muscle_pain', 'prognosis']
+        diseases = ['Allergy', 'Cold', 'Dengue', 'Fungal infection', 'Malaria',
+                    'Migrane', 'Pneumonia', 'Typhoid', 'Urinary tract infection', 'Tuberculosis']
         symptoms = []
-        for i in range(0,10):
+        for i in range(0, 10):
             if data[i] == 1:
                 symptoms.append(s[i])
         model = pickle.load(open('medpredMLP.pickle', 'rb'))
@@ -39,11 +41,13 @@ def prediction():
             # print(jdata)
         #     data = jdata[d]
         # data = jsonify(dummydata)
-        
+
         class_probs = np.array(model.predict_proba([data]))
-        i,max1 = np.argsort(np.max(class_probs,axis=0))[-1],class_probs[0][i]
-        j,max2 = np.argsort(np.max(class_probs,axis=0))[-2],class_probs[0][i]
-        
+        i, max1 = np.argsort(np.max(class_probs, axis=0)
+                             )[-1], class_probs[0][i]
+        j, max2 = np.argsort(np.max(class_probs, axis=0)
+                             )[-2], class_probs[0][i]
+
         # print(ddata)
         dis1 = jdata[diseases[i]][1]
         prid1 = []
@@ -51,11 +55,11 @@ def prediction():
             med = dis1[u]
             priority = (med[0]-3*med[1]-7*med[2])*max1
             prid1.append(priority)
-            dis1[u][-1]=priority
+            dis1[u][-1] = priority
 
         print(dis1)
         np.array(prid1)
-        k = np.argsort(prid1)[::-1]        
+        k = np.argsort(prid1)[::-1]
         print(k)
         # for key,values in dis1.items():
         klist = [x for x in dis1]
@@ -67,7 +71,7 @@ def prediction():
         # np.sort(prid1)
         ndata = OrderedDict()
         for t in flist:
-            ndata[t]=dis1[t]
+            ndata[t] = dis1[t]
             # ndata = ndata.append({t:dis1[t]})
         print(ndata)
         dis2 = jdata[diseases[j]][1]
@@ -77,7 +81,7 @@ def prediction():
             med = dis2[u]
             priority = (med[0]-3*med[1]-2*med[2])*max2
             prid2.append(priority)
-            dis2[u][-1]=priority
+            dis2[u][-1] = priority
 
         l = np.argsort(prid2)[::-1]
         llist = [x for x in dis2]
@@ -88,16 +92,17 @@ def prediction():
         # print(fllist)
         # print(dis2)
         for t in fllist:
-            ndata[t]=dis2[t]
+            ndata[t] = dis2[t]
         print(ndata)
-        
+
         # ndata = {d: data}
         # list1 = []
         # list2 = []
         # list1.append(ndata)
         # list1.append(symptoms)
         np.random.seed(0)
-        return json.dumps([ndata,symptoms])
+        return json.dumps([ndata, symptoms])
+
 
 if __name__ == '__main__':
-    app.run(host='localhost',port=5000, debug=True)
+    app.run(host='localhost', port=5000, debug=True)
