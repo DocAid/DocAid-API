@@ -6,7 +6,7 @@ from collections import OrderedDict
 import socket
 import json
 import numpy as np
-import pyrebase
+# import pyrebase
 import pdfkit
 import sklearn
 app = Flask(__name__)
@@ -25,8 +25,8 @@ config = {
 
 }
 
-firebase = pyrebase.initialize_app(config)
-storage = firebase.storage()
+# firebase = pyrebase.initialize_app(config)
+# storage = firebase.storage()
 
 patient_details = db.collection('patient_details')
 medicines_diagonized = db.collection('medicines_diagonized')
@@ -324,8 +324,8 @@ def socket_server():
 
 
 if __name__ == '__main__':
-    host = "34.93.231.96"
-    # host = socket.gethostname()
+    # host = "34.93.231.96"
+    host = socket.gethostname()
     port = 5500
 
     client = socket.socket()
