@@ -6,7 +6,7 @@ from collections import OrderedDict
 import socket
 import json
 import numpy as np
-# import pyrebase
+import pyrebase
 import pdfkit
 import sklearn
 app = Flask(__name__)
@@ -25,8 +25,8 @@ config = {
 
 }
 
-# firebase = pyrebase.initialize_app(config)
-# storage = firebase.storage()
+firebase = pyrebase.initialize_app(config)
+storage = firebase.storage()
 
 patient_details = db.collection('patient_details')
 medicines_diagonized = db.collection('medicines_diagonized')
@@ -81,7 +81,7 @@ def prediction():
         s = ['skin_rash', 'continuous_sneezing', 'acidity', 'fatigue', 'nausea', 'loss_of_appetite',
              'chest_pain', 'fast_heart_rate', 'bladder_discomfort', 'muscle_pain', 'prognosis']
         diseases = ['Allergy', 'Cold', 'Dengue', 'Fungal infection', 'Malaria',
-                    'Migrane', 'Pneumonia', 'Typhoid', 'Urinary tract infection', 'Tuberculosis']
+                    'Migraine', 'Pneumonia', 'Typhoid', 'Urinary tract infection', 'Tuberculosis']
         symptoms = []
         alcohol = patient['alc']
         pregnancy = patient['preg']
