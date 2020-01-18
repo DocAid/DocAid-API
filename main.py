@@ -1,18 +1,17 @@
-
 from flask import Flask, redirect, url_for, request, jsonify, render_template
 from firebase_admin import credentials, firestore, initialize_app
 import pickle
+import requests
 from collections import OrderedDict
 import socket
 import json
 import numpy as np
 import pyrebase
 import pdfkit
-import sklearn
+from skimage import io
 import matplotlib.pyplot as plt
 import matplotlib
 from matplotlib.patches import Arrow, Circle
-
 
 app = Flask(__name__)
 cred = credentials.Certificate('key.json')
@@ -20,14 +19,13 @@ default_app = initialize_app(cred)
 db = firestore.client()
 
 config = {
-    "apiKey": "AIzaSyAmAnf-0bRmvGjRkJJgpZkDiZ3nRIFlBhw",
-    "authDomain": "docaid-api.firebaseapp.com",
-    "databaseURL": "https://docaid-api.firebaseio.com",
-    "projectId": "docaid-api",
-    "storageBucket": "docaid-api.appspot.com",
-    "messagingSenderId": "918014081942",
-    "appId": "1:918014081942:web:827def8f7c8615204d7bb7"
-
+  "apiKey": "AIzaSyAmAnf-0bRmvGjRkJJgpZkDiZ3nRIFlBhw",
+  "authDomain": "docaid-api.firebaseapp.com",
+  "databaseURL": "https://docaid-api.firebaseio.com",
+  "projectId": "docaid-api",
+  "storageBucket": "docaid-api.appspot.com",
+  "messagingSenderId": "918014081942",
+  "appId": "1:918014081942:web:827def8f7c8615204d7bb7"
 }
 
 firebase = pyrebase.initialize_app(config)
@@ -40,6 +38,7 @@ reports = db.collection('reportsUrl')
 charts1 = db.collection('charts1')
 charts2 = db.collection('charts2')
 
+
 # API SUMMARY
 
 # API1: patient_details_api [POST and GET]
@@ -48,15 +47,17 @@ charts2 = db.collection('charts2')
 
 
 @app.route('/rg', methods=['POST'])
-def genPdf():
+def gen_pdf():
     if request.method == 'POST':
         data = request.json
         age = data['age']
         pid = data['pid']
         dosages = data['dosages']
         bmi = data['bmi']
-        img1 = 'https://firebasestorage.googleapis.com/v0/b/docaid-api.appspot.com/o/img1.jpg?alt=media&token=63ba5fe0-d6a7-42e9-8644-129c85725845'
-        img2 = 'https://firebasestorage.googleapis.com/v0/b/docaid-api.appspot.com/o/img2.png?alt=media&token=18f4aa32-badf-4104-9e85-693dd8a96561'
+        img1 = 'https://firebasestorage.googleapis.com/v0/b/docaid-api.appspot.com/o/img1.jpg?alt=media&' \
+               'token=63ba5fe0-d6a7-42e9-8644-129c85725845'
+        img2 = 'https://firebasestorage.googleapis.com/v0/b/docaid-api.appspot.com/o/img2.png?alt=media&' \
+               'token=18f4aa32-badf-4104-9e85-693dd8a96561'
         x = render_template('r.html', pid=pid, age=age,
                             bmi=bmi, dosages=dosages, img1=img1, img2=img2)
         print(type(x))
@@ -79,7 +80,7 @@ def chart1():
     print(pid)
     res = requests.get('http://34.93.231.96:5000/keywords', json={'pid': pid})
     data = res.json()
-    totalPositiveSymps = []
+    total_positive_symps = []
     i = 0
     a = 0
     for da in data:
@@ -89,22 +90,22 @@ def chart1():
             temp2 = temp1['symptoms']
             for k in temp2.keys():
                 print(type(temp2[k]))
-                if temp2[k] == True:
+                if temp2[k]:
                     a += 1
             break
         i += 1
         if i % 2 == 0:
             i = 0
-            totalPositiveSymps.append(a)
-    for i in range(1, len(totalPositiveSymps)):
-        totalPositiveSymps[i] = totalPositiveSymps[i]-totalPositiveSymps[i-1]
-    dateStr = ['1-3', '4-6', '7-9', '10-12',
-               '13-15', '16-18', '19-21', '22-24']
-    print(totalPositiveSymps)
-    print(dateStr)
+            total_positive_symps.append(a)
+    for i in range(1, len(total_positive_symps)):
+        total_positive_symps[i] = total_positive_symps[i] - total_positive_symps[i - 1]
+    date_str = ['1-3', '4-6', '7-9', '10-12', '13-15', '16-18', '19-21', '22-24']
+    print(total_positive_symps)
+    print(date_str)
 
-    plt.plot(dateStr, totalPositiveSymps,
-             label="No of symptoms recognized per 3 days",  marker="*", color='green', linestyle='dashed', linewidth=3, markerfacecolor='blue', markersize=12)
+    plt.plot(date_str, total_positive_symps,
+             label="No of symptoms recognized per 3 days", marker="*", color='green', linestyle='dashed', linewidth=3,
+             markerfacecolor='blue', markersize=12)
 
     # setting x and y axis range
     plt.ylim(1, 32)
@@ -123,7 +124,7 @@ def chart1():
     data = {
         'chart_url': chart_url
     }
-    res = charts1.document(pid).set(data)
+    # res = charts1.document(pid).set(data)
     return data
 
 
@@ -158,14 +159,14 @@ def charts2():
 
     colors = ['r', 'y', 'g', 'b', 'm']
 
-# plotting the pie chart
+    # plotting the pie chart
     plt.pie(x, labels=y, colors=colors,
             startangle=90, shadow=True, explode=(0.1, 0.1, 0.1, 0.1, 0),
             radius=1.2, autopct='%1.1f%%', pctdistance=1.1, labeldistance=1.3),
     handles = []
     for i, l in enumerate(y):
-        handles.append(matplotlib.patches.Patch(
-            color=plt.cm.Set3((i)/8.), label=l))
+        handles.append(matplotlib.patches.Patch(color=colors[0], label=l))
+
     plt.legend(handles, y, bbox_to_anchor=(0.9, 1.025), loc="upper left")
     plt.title('Doasges or tablets taken for each medicine in a week\n\n')
     plt.savefig('plot2.png')
@@ -175,8 +176,8 @@ def charts2():
     data = {
         'chart_url': chart_url
     }
-    temp = pid+"pie"
-    res = charts1.document(temp).set(data)
+    # temp = pid + "pie"
+    # res = charts1.document(temp).set(data)
     return data
 
 
@@ -210,26 +211,26 @@ def charts3():
     data = {
         'chart_url': chart_url
     }
-    temp = pid+"bmi"
-    res = charts1.document(temp).set(data)
+    # temp = pid + "bmi"
+    # res = charts1.document(temp).set(data)
     return data
 
 
 @app.route('/sendReportToDB', methods=['POST'])
-def getReport():
-    requestData = request.json
-    pid = requestData['pid']
+def get_report():
+    request_data = request.json
+    pid = request_data['pid']
     data = reports.document(pid).get()
     return jsonify(data.to_dict())
 
 
 @app.route('/prediction', methods=['POST'])
 def prediction():
-
-    requestData = request.json
-    print(requestData)
-    data = requestData['val']
-    patient = requestData['patient']
+    # global i
+    request_data = request.json
+    print(request_data)
+    data = request_data['val']
+    patient = request_data['patient']
     if request.method == 'POST':
         s = ['skin_rash', 'continuous_sneezing', 'acidity', 'fatigue', 'nausea', 'loss_of_appetite',
              'chest_pain', 'fast_heart_rate', 'bladder_discomfort', 'muscle_pain', 'prognosis']
@@ -262,7 +263,7 @@ def prediction():
         prid1 = []
         for u in dis1:
             med = dis1[u]
-            priority = (med[0]-3*alcohol-7*pregnancy)*max1
+            priority = (med[0] - 3 * alcohol - 7 * pregnancy) * max1
             prid1.append(priority)
             dis1[u][-1] = priority
 
@@ -288,7 +289,7 @@ def prediction():
         prid2 = []
         for u in dis2:
             med = dis2[u]
-            priority = (med[0]-3*alcohol-2*pregnancy)*max2
+            priority = (med[0] - 3 * alcohol - 2 * pregnancy) * max2
             prid2.append(priority)
             dis2[u][-1] = priority
 
@@ -316,11 +317,11 @@ def prediction():
 @app.route('/patient_details', methods=['POST', 'GET'])
 def patient_details_api():
 
-    requestData = request.json
-    pid = requestData['pid']
+    request_data = request.json
+    pid = request_data['pid']
 
     if request.method == 'POST':
-        res = patient_details.document(pid).set(request.json)
+        # res = patient_details.document(pid).set(request.json)
         data = {
 
             "message": "patient_added",
@@ -334,12 +335,12 @@ def patient_details_api():
         return "Invalid request"
 
 
-@app.route('/diagonized_medicines_1', methods=['POST'])
-def diagonized_medicines_1():
-    requestData = request.json
-    pid = requestData['pid']
+@app.route('/diagonalized_medicines_1', methods=['POST'])
+def diagonalized_medicines_1():
+    request_data = request.json
+    pid = request_data['pid']
 
-    if(request.method == 'POST'):
+    if request.method == 'POST':
         data = medicines_diagonized.document(pid).get()
         d = data.to_dict()
         l = []
@@ -350,16 +351,15 @@ def diagonized_medicines_1():
         return "Invalid request"
 
 
-@app.route('/diagonized_medicines', methods=['POST', 'GET', 'PUT'])
-def diagonized_medicines():
-    requestData = request.json
-    pid = requestData['pid']
-    if(request.method == 'POST'):
+@app.route('/diagonalized_medicines', methods=['POST', 'GET', 'PUT'])
+def diagonalized_medicines():
+    request_data = request.json
+    pid = request_data['pid']
+    if request.method == 'POST':
 
-        timestamp = requestData['timestamp']
-        sendData = {}
-        sendData[timestamp] = requestData
-        medicines_diagonized.document(pid).set(sendData)
+        timestamp = request_data['timestamp']
+        send_data = {timestamp: request_data}
+        medicines_diagonized.document(pid).set(send_data)
         data = {
             "message": "Medicines stored for first time",
             "pid": pid,
@@ -374,17 +374,18 @@ def diagonized_medicines():
             Here, the previous json object will be called using get and then the current one will be appended,
             so that it becomes an array of objects according to timestamp. 
 
-            #Thats just json, manipulation, in the api, we will just update the value, whenever a put request is received.
+            #Thats just json, manipulation, in the api, we will just update the value, whenever a put request is 
+            received.
         '''
-        # The requestData will obviously change as is sent in the request.
+        # The request_data will obviously change as is sent in the request.
 
-        timestamp = requestData['timestamp']
+        timestamp = request_data['timestamp']
         data = medicines_diagonized.document(pid).get()
         data = data.to_dict()
         json_data = {}
         for key in data.keys():
             json_data[key] = data[key]
-        json_data[timestamp] = requestData
+        json_data[timestamp] = request_data
         print(json_data)
         medicines_diagonized.document(pid).update(json_data)
         data = {
@@ -394,7 +395,7 @@ def diagonized_medicines():
         return data
 
     # This will be used while generating the prescription.
-    elif(request.method == 'GET'):
+    elif request.method == 'GET':
         data = medicines_diagonized.document(pid).get()
         return jsonify(data.to_dict())
 
@@ -404,15 +405,13 @@ def diagonized_medicines():
 
 @app.route('/keywords', methods=['GET', 'PUT', 'POST'])
 def keywords():
+    request_data = request.json
+    pid = request_data['pid']
 
-    requestData = request.json
-    pid = requestData['pid']
-
-    if(request.method == 'POST'):
-        timestamp = requestData['timestamp']
-        sendData = {}
-        sendData[timestamp] = requestData
-        diagnosis_keywords.document(pid).set(sendData)
+    if request.method == 'POST':
+        timestamp = request_data['timestamp']
+        send_data = {timestamp: request_data}
+        diagnosis_keywords.document(pid).set(send_data)
         data = {
             "message": "Keywords stored!!!",
             "pid": pid,
@@ -422,18 +421,19 @@ def keywords():
 
     elif request.method == 'PUT':
         '''
-            #This is exactly same as the previous API.
+            This is exactly same as the previous API.
 
-            #Now this is interesting, please note carefully. 
+            Now this is interesting, please note carefully. 
             When the doctor is gonna update it when the user visits second time, 
             Here, the previous json object will be called using get and then the current one will be appended,
             so that it becomes an array of objects according to timestamp. 
 
-            #Thats just json, manipulation, in the api, we will just update the value, whenever a put request is received.
+            That's just json, manipulation, in the api, we will just update the value, whenever a put request is 
+            received.
         '''
         # The requestData will obviously change as is sent in the request.
 
-        timestamp = requestData['timestamp']
+        timestamp = request_data['timestamp']
         data = diagnosis_keywords.document(pid).get()
         print(data)
         data = data.to_dict()
@@ -442,7 +442,7 @@ def keywords():
         for key in data.keys():
             json_data[key] = data[key]
         print(json_data)
-        json_data[timestamp] = requestData
+        json_data[timestamp] = request_data
         diagnosis_keywords.document(pid).update(json_data)
         data = {
             "message": "Keywords updated",
@@ -451,7 +451,7 @@ def keywords():
         return data
 
     # This will be used while generating the prescription.
-    elif(request.method == 'GET'):
+    elif request.method == 'GET':
         data = diagnosis_keywords.document(pid).get()
         return jsonify(data.to_dict())
 
@@ -466,7 +466,6 @@ def index():
 
 @app.route('/socket_conn', methods=['POST'])
 def socket_server():
-
     # Work for raghav: pull user data from firebase and put it in data
     # if data not in firebase, return unsuccessful
 
@@ -477,7 +476,7 @@ def socket_server():
 
 
 if __name__ == '__main__':
-    host = "34.93.231.96"
+    host = "127.0.0.1"
     # host = socket.gethostname()
     port = 5500
 

@@ -2,6 +2,8 @@
 from flask import Flask, redirect, url_for, request, jsonify
 from firebase_admin import credentials, firestore, initialize_app
 import json
+
+
 app = Flask(__name__)
 cred = credentials.Certificate('key.json')
 default_app = initialize_app(cred)

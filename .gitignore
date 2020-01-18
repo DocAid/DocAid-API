@@ -2,3 +2,8 @@ key.json
 \__pycache__/
 nohup.out
 \.idea
+\venv/share/*
+
+venv/bin/
+
+venv/lib/
