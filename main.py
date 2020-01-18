@@ -2,6 +2,8 @@ import socket
 import _thread
 import pickle
 
+from config import ip
+
 
 def new_client(client, addr, clientID, clients):
     while True:
@@ -21,11 +23,8 @@ def new_client(client, addr, clientID, clients):
 def main():
     clients = []
     clientID = -1
-    # get the hostname
-    # host = socket.gethostname()
-    #host = "34.93.231.96"
-    host = "127.0.0.1"
 
+    host = ip
     port = 5500
 
     server = socket.socket()
