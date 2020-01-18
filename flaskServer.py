@@ -13,6 +13,8 @@ import matplotlib.pyplot as plt
 import matplotlib
 from matplotlib.patches import Arrow, Circle
 
+from config import ip
+
 app = Flask(__name__)
 cred = credentials.Certificate('key.json')
 default_app = initialize_app(cred)
@@ -335,7 +337,7 @@ def patient_details_api():
         return "Invalid request"
 
 
-@app.route('/diagonalized_medicines_1', methods=['POST'])
+@app.route('/diagonized_medicines_1', methods=['POST'])
 def diagonalized_medicines_1():
     request_data = request.json
     pid = request_data['pid']
@@ -351,7 +353,7 @@ def diagonalized_medicines_1():
         return "Invalid request"
 
 
-@app.route('/diagonalized_medicines', methods=['POST', 'GET', 'PUT'])
+@app.route('/diagonized_medicines', methods=['POST', 'GET', 'PUT'])
 def diagonalized_medicines():
     request_data = request.json
     pid = request_data['pid']
@@ -476,8 +478,7 @@ def socket_server():
 
 
 if __name__ == '__main__':
-    host = "34.93.107.86"
-    # host = socket.gethostname()
+    host = ip
     port = 5500
 
     client = socket.socket()
