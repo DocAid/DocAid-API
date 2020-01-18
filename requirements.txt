@@ -91,7 +91,7 @@ pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycairo==1.18.2
 pycparser==2.19
-pycryptodome==3.4.3
+pycryptodome==3.6.6
 pycups==1.9.74
 pycurl==7.43.0.3
 PyGObject==3.34.0
