@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 from matplotlib.patches import Arrow, Circle
 
-from config import ip
+from config import socketIp, serverAddr
 
 app = Flask(__name__)
 cred = credentials.Certificate('key.json')
@@ -80,7 +80,7 @@ def chart1():
     r = request.json
     pid = r['pid']
     print(pid)
-    res = requests.get('http://34.93.231.96:5000/keywords', json={'pid': pid})
+    res = requests.get( serverAddr + '/keywords', json={'pid': pid})
     data = res.json()
     total_positive_symps = []
     i = 0
@@ -135,7 +135,7 @@ def charts2():
     r = request.json
     pid = r['pid']
     res = requests.get(
-        'http://34.93.231.96:5000/diagonized_medicines', json={'pid': 'POC008'})
+        serverAddr + '/diagonized_medicines', json={'pid': 'POC008'})
     data = res.json()
     doxyl = 0
     vist = 0
@@ -189,7 +189,7 @@ def charts3():
     pid = r['pid']
     print(pid)
     res = requests.get(
-        'http://34.93.231.96:5000/patient_details', json={'pid': pid})
+        serverAddr + '/patient_details', json={'pid': pid})
     data = res.json()
     print(data)
     weight = data['weight']
@@ -478,7 +478,7 @@ def socket_server():
 
 
 if __name__ == '__main__':
-    host = ip
+    host = socketIp
     port = 5500
 
     client = socket.socket()

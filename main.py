@@ -2,7 +2,7 @@ import socket
 import _thread
 import pickle
 
-from config import ip
+from config import socketIp
 
 
 def new_client(client, addr, clientID, clients):
@@ -24,7 +24,7 @@ def main():
     clients = []
     clientID = -1
 
-    host = ip
+    host = socketIp
     port = 5500
 
     server = socket.socket()
