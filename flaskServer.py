@@ -1,11 +1,11 @@
+# Install wkhtmltopdf from apt or whatever and install it. then pdfkit will work
+
 from flask import Flask, redirect, url_for, request, jsonify, render_template
 from firebase_admin import credentials, firestore, initialize_app
 import pickle
 import requests
-from collections import OrderedDict
 import socket
 import json
-import numpy as np
 import pyrebase
 import pdfkit
 from skimage import io
@@ -39,6 +39,7 @@ diagnosis_keywords = db.collection('diagnosis_keywords')
 reports = db.collection('reportsUrl')
 charts1 = db.collection('charts1')
 charts2 = db.collection('charts2')
+bookings = db.collection('bookings')
 
 
 # API SUMMARY
@@ -74,6 +75,26 @@ def gen_pdf():
         }
         res = reports.document(pid).set(data)
         return pdf_url
+
+
+@app.route('/booking', methods=["GET", "POST"])
+def booking():
+    available = bookings.document('time').get()
+    available = available.to_dict()
+    print(available)
+    available = available['available']
+    if request.method == 'GET':
+        return available
+
+    else:
+        r = request.json
+        time = int(r['time'])
+        if available[time]:
+            available[time] = False
+            bookings.document('time').set({'available': available})
+            return "Booked Successfully!"
+        else:
+            return "Slot Busy!"
 
 
 @app.route('/charts1', methods=['POST'])
@@ -227,11 +248,19 @@ def get_report():
     return jsonify(data.to_dict())
 
 
+def predict(request_data, alcohol, pregency):
+    medicine = request_data
+    medicine = list(medicine.items())
+    for i in range(len(medicine)):
+        medicine[i][1][8] = medicine[i][1][0] + 5*alcohol*medicine[i][1][1] + 5*pregency*medicine[i][1][2]
+    medicine.sort(key=lambda x: x[1][8])
+    print(medicine)
+    return medicine
+
+
 @app.route('/prediction', methods=['POST'])
 def prediction():
-    # global i
     request_data = request.json
-    print(request_data)
     data = request_data['val']
     patient = request_data['patient']
     if request.method == 'POST':
@@ -240,85 +269,22 @@ def prediction():
         diseases = ['Allergy', 'Cold', 'Dengue', 'Fungal infection', 'Malaria',
                     'Migraine', 'Pneumonia', 'Typhoid', 'Urinary tract infection', 'Tuberculosis']
         symptoms = []
-        alcohol = patient['alc']
-        pregnancy = patient['preg']
+        alcohol = int(patient['alc'])
+        pregnancy = int(patient['preg'])
         for i in range(0, 10):
             if data[i] == 1:
                 symptoms.append(s[i])
-        model = pickle.load(open('medpredMLP.pickle', 'rb'))
-        dummydata = model.predict([data])
-        d = str(dummydata[0])
-        print(type(d), d)
+        model = pickle.load(open('KNN.pickle', 'rb'))
+        pred = model.predict([data])
+        d = str(pred[0])
         with open('Medicine.json') as json_file:
             jdata = json.load(json_file)
-            # print(jdata)
             data = jdata[d]
             data = data[1]
-            print("Before JSON: ", data)
-            result = [data, symptoms]
+            result = predict(data, alcohol, pregnancy)
+            result = [result, symptoms]
             print(result)
             return pickle.dumps(result)
-
-        # class_probs = np.array(model.predict_proba([data]))
-        # i, max1 = np.argsort(np.max(class_probs, axis=0)
-        #                      )[-1], class_probs[0][i]
-        # j, max2 = np.argsort(np.max(class_probs, axis=0)
-        #                      )[-2], class_probs[0][i]
-        #
-        # # print(ddata)
-        # dis1 = jdata[diseases[i]][1]
-        # prid1 = []
-        # for u in dis1:
-        #     med = dis1[u]
-        #     priority = (med[0] - 3 * alcohol - 7 * pregnancy) * max1
-        #     prid1.append(priority)
-        #     dis1[u][-1] = priority
-        #
-        # print(dis1)
-        # np.array(prid1)
-        # k = np.argsort(prid1)[::-1]
-        # print(k)
-        # # for key,values in dis1.items():
-        # klist = [x for x in dis1]
-        # # print(klist)
-        # flist = []
-        # for o in k:
-        #     flist.append(klist[o])
-        # # print(flist)
-        # # np.sort(prid1)
-        # ndata = OrderedDict()
-        # for t in flist:
-        #     ndata[t] = dis1[t]
-        #     # ndata = ndata.append({t:dis1[t]})
-        # print(ndata)
-        # dis2 = jdata[diseases[j]][1]
-        # # print(dis2)
-        # prid2 = []
-        # for u in dis2:
-        #     med = dis2[u]
-        #     priority = (med[0] - 3 * alcohol - 2 * pregnancy) * max2
-        #     prid2.append(priority)
-        #     dis2[u][-1] = priority
-        #
-        # l = np.argsort(prid2)[::-1]
-        # llist = [x for x in dis2]
-        # # print(llist)
-        # fllist = []
-        # for o in l:
-        #     fllist.append(llist[o])
-        # # print(fllist)
-        # # print(dis2)
-        # for t in fllist:
-        #     ndata[t] = dis2[t]
-        # print(ndata)
-        #
-        # # ndata = {d: data}
-        # # list1 = []
-        # # list2 = []
-        # # list1.append(ndata)
-        # # list1.append(symptoms)
-        # np.random.seed(0)
-
 
 
 @app.route('/patient_details', methods=['POST', 'GET'])
@@ -328,7 +294,7 @@ def patient_details_api():
     pid = request_data['pid']
 
     if request.method == 'POST':
-        # res = patient_details.document(pid).set(request.json)
+        res = patient_details.document(pid).set(request.json)
         data = {
 
             "message": "patient_added",
