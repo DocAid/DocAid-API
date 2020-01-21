@@ -55,13 +55,14 @@ def gen_pdf():
         age = data['age']
         pid = data['pid']
         dosages = data['dosages']
-        bmi = data['bmi']
+        # bmi = data['bmi']
         img1 = 'https://firebasestorage.googleapis.com/v0/b/docaid-api.appspot.com/o/img1.jpg?alt=media&' \
                'token=63ba5fe0-d6a7-42e9-8644-129c85725845'
         img2 = 'https://firebasestorage.googleapis.com/v0/b/docaid-api.appspot.com/o/img2.png?alt=media&' \
                'token=18f4aa32-badf-4104-9e85-693dd8a96561'
         x = render_template('r.html', pid=pid, age=age,
-                            bmi=bmi, dosages=dosages, img1=img1, img2=img2)
+                            # bmi=bmi,
+                            dosages=dosages, img1=img1, img2=img2)
         print(type(x))
         print(x)
         pdfkit.from_string(x, 'report1.pdf')
@@ -245,75 +246,79 @@ def prediction():
             if data[i] == 1:
                 symptoms.append(s[i])
         model = pickle.load(open('medpredMLP.pickle', 'rb'))
-        # dummydata = model.predict([data])
-        # d = str(dummydata[0])
-        # print(type(d), d)
+        dummydata = model.predict([data])
+        d = str(dummydata[0])
+        print(type(d), d)
         with open('Medicine.json') as json_file:
             jdata = json.load(json_file)
             # print(jdata)
-        #     data = jdata[d]
-        # data = jsonify(dummydata)
+            data = jdata[d]
+            data = data[1]
+            print("Before JSON: ", data)
+            result = [data, symptoms]
+            print(result)
+            return pickle.dumps(result)
 
-        class_probs = np.array(model.predict_proba([data]))
-        i, max1 = np.argsort(np.max(class_probs, axis=0)
-                             )[-1], class_probs[0][i]
-        j, max2 = np.argsort(np.max(class_probs, axis=0)
-                             )[-2], class_probs[0][i]
+        # class_probs = np.array(model.predict_proba([data]))
+        # i, max1 = np.argsort(np.max(class_probs, axis=0)
+        #                      )[-1], class_probs[0][i]
+        # j, max2 = np.argsort(np.max(class_probs, axis=0)
+        #                      )[-2], class_probs[0][i]
+        #
+        # # print(ddata)
+        # dis1 = jdata[diseases[i]][1]
+        # prid1 = []
+        # for u in dis1:
+        #     med = dis1[u]
+        #     priority = (med[0] - 3 * alcohol - 7 * pregnancy) * max1
+        #     prid1.append(priority)
+        #     dis1[u][-1] = priority
+        #
+        # print(dis1)
+        # np.array(prid1)
+        # k = np.argsort(prid1)[::-1]
+        # print(k)
+        # # for key,values in dis1.items():
+        # klist = [x for x in dis1]
+        # # print(klist)
+        # flist = []
+        # for o in k:
+        #     flist.append(klist[o])
+        # # print(flist)
+        # # np.sort(prid1)
+        # ndata = OrderedDict()
+        # for t in flist:
+        #     ndata[t] = dis1[t]
+        #     # ndata = ndata.append({t:dis1[t]})
+        # print(ndata)
+        # dis2 = jdata[diseases[j]][1]
+        # # print(dis2)
+        # prid2 = []
+        # for u in dis2:
+        #     med = dis2[u]
+        #     priority = (med[0] - 3 * alcohol - 2 * pregnancy) * max2
+        #     prid2.append(priority)
+        #     dis2[u][-1] = priority
+        #
+        # l = np.argsort(prid2)[::-1]
+        # llist = [x for x in dis2]
+        # # print(llist)
+        # fllist = []
+        # for o in l:
+        #     fllist.append(llist[o])
+        # # print(fllist)
+        # # print(dis2)
+        # for t in fllist:
+        #     ndata[t] = dis2[t]
+        # print(ndata)
+        #
+        # # ndata = {d: data}
+        # # list1 = []
+        # # list2 = []
+        # # list1.append(ndata)
+        # # list1.append(symptoms)
+        # np.random.seed(0)
 
-        # print(ddata)
-        dis1 = jdata[diseases[i]][1]
-        prid1 = []
-        for u in dis1:
-            med = dis1[u]
-            priority = (med[0] - 3 * alcohol - 7 * pregnancy) * max1
-            prid1.append(priority)
-            dis1[u][-1] = priority
-
-        print(dis1)
-        np.array(prid1)
-        k = np.argsort(prid1)[::-1]
-        print(k)
-        # for key,values in dis1.items():
-        klist = [x for x in dis1]
-        # print(klist)
-        flist = []
-        for o in k:
-            flist.append(klist[o])
-        # print(flist)
-        # np.sort(prid1)
-        ndata = OrderedDict()
-        for t in flist:
-            ndata[t] = dis1[t]
-            # ndata = ndata.append({t:dis1[t]})
-        print(ndata)
-        dis2 = jdata[diseases[j]][1]
-        # print(dis2)
-        prid2 = []
-        for u in dis2:
-            med = dis2[u]
-            priority = (med[0] - 3 * alcohol - 2 * pregnancy) * max2
-            prid2.append(priority)
-            dis2[u][-1] = priority
-
-        l = np.argsort(prid2)[::-1]
-        llist = [x for x in dis2]
-        # print(llist)
-        fllist = []
-        for o in l:
-            fllist.append(llist[o])
-        # print(fllist)
-        # print(dis2)
-        for t in fllist:
-            ndata[t] = dis2[t]
-        print(ndata)
-
-        # ndata = {d: data}
-        # list1 = []
-        # list2 = []
-        # list1.append(ndata)
-        # list1.append(symptoms)
-        np.random.seed(0)
-        return pickle.dumps([ndata, symptoms])
 
 
 @app.route('/patient_details', methods=['POST', 'GET'])
