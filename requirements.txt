@@ -58,5 +58,5 @@ six==1.14.0
 sklearn==0.0
 uritemplate==3.0.1
 urllib3==1.25.7
-Werkzeug==0.16.0
+Werkzeug==2.2.3
 wkhtmltopdf==0.2
